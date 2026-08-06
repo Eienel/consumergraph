@@ -41,8 +41,8 @@ class ChangeRequest(BaseModel):
     column: str
     new_name: str | None = None
     new_type: str | None = None
+    replacement_relation: str | None = None
 
 
 class WritebackRequest(BaseModel):
     analysis: dict
-

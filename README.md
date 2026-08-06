@@ -68,7 +68,17 @@ datahub datapack load showcase-ecommerce
 
 ```bash
 pytest
+python scripts/run_local_proof.py
 ```
+
+The local proof uses a dbt-shaped project and Python's built-in SQLite engine, so it
+needs no warehouse, paid API, or Docker. It first proves that renaming
+`customer_id` to `buyer_id` breaks four downstream models, then runs ConsumerGraph,
+applies its generated compatibility view, and proves every model works again.
+
+The fixture is intentionally small enough to audit line by line. The next
+integration target is the official DataHub `showcase-ecommerce` datapack; that
+requires a running DataHub Quickstart with Docker Desktop allocated at least 8 GB.
 
 ## Safety model
 
@@ -80,9 +90,13 @@ pytest
 
 ## Roadmap
 
-The same dependency intelligence can later power IncidentGraph, TimeFence, TrainServe, and—through a warehouse execution layer—business-customer journey convergence.
+The same dependency intelligence can later power IncidentGraph, TimeFence,
+TrainServe, and, through a warehouse execution layer, business-customer journey
+convergence.
+
+See [docs/VALIDATION.md](docs/VALIDATION.md) for the evidence, limits, and local
+break/repair proof behind the product claim.
 
 ## License
 
 Apache License 2.0.
-
