@@ -1,0 +1,2 @@
+"""ConsumerGraph application package."""
+

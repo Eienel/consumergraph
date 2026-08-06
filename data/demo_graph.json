@@ -1,0 +1,107 @@
+{
+  "assets": [
+    {
+      "id": "customer_360",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.customer_360,PROD)",
+      "name": "analytics.customer_360",
+      "type": "dataset",
+      "platform": "snowflake",
+      "owner": "Data Platform",
+      "domain": "Customer",
+      "criticality": 5,
+      "columns": [
+        {"name": "customer_id", "type": "STRING", "nullable": false},
+        {"name": "lifetime_value", "type": "DECIMAL(18,2)", "nullable": true},
+        {"name": "segment", "type": "STRING", "nullable": true},
+        {"name": "last_order_at", "type": "TIMESTAMP", "nullable": true}
+      ],
+      "queries": []
+    },
+    {
+      "id": "finance_revenue",
+      "name": "Finance Revenue Dashboard",
+      "type": "dashboard",
+      "platform": "looker",
+      "owner": "Finance Analytics",
+      "domain": "Finance",
+      "criticality": 5,
+      "columns": [],
+      "queries": [
+        "SELECT customer_id, SUM(lifetime_value) FROM analytics.customer_360 GROUP BY customer_id",
+        "SELECT segment, AVG(lifetime_value) FROM analytics.customer_360 GROUP BY segment"
+      ]
+    },
+    {
+      "id": "growth_segments",
+      "name": "growth.customer_segments",
+      "type": "dataset",
+      "platform": "dbt",
+      "owner": "Growth Data",
+      "domain": "Marketing",
+      "criticality": 4,
+      "columns": [],
+      "queries": [
+        "SELECT customer_id, segment FROM analytics.customer_360 WHERE segment IS NOT NULL",
+        "SELECT c.customer_id FROM analytics.customer_360 c JOIN campaign_events e ON c.customer_id = e.customer_id"
+      ]
+    },
+    {
+      "id": "support_priority",
+      "name": "Support Priority Queue",
+      "type": "dashboard",
+      "platform": "powerbi",
+      "owner": "Customer Operations",
+      "domain": "Support",
+      "criticality": 4,
+      "columns": [],
+      "queries": [
+        "SELECT customer_id, lifetime_value, last_order_at FROM analytics.customer_360 WHERE lifetime_value > 1000"
+      ]
+    },
+    {
+      "id": "churn_features",
+      "name": "ml.churn_features",
+      "type": "ml_feature_table",
+      "platform": "mlflow",
+      "owner": "ML Platform",
+      "domain": "Machine Learning",
+      "criticality": 5,
+      "columns": [],
+      "queries": [
+        "SELECT customer_id, lifetime_value, DATEDIFF(day, last_order_at, CURRENT_DATE) AS recency FROM analytics.customer_360"
+      ]
+    },
+    {
+      "id": "churn_model",
+      "name": "Customer Churn Model v4",
+      "type": "ml_model",
+      "platform": "mlflow",
+      "owner": "Retention ML",
+      "domain": "Machine Learning",
+      "criticality": 5,
+      "columns": [],
+      "queries": []
+    },
+    {
+      "id": "campaign_dashboard",
+      "name": "Campaign Conversion Dashboard",
+      "type": "dashboard",
+      "platform": "tableau",
+      "owner": "Marketing Analytics",
+      "domain": "Marketing",
+      "criticality": 3,
+      "columns": [],
+      "queries": [
+        "SELECT segment, COUNT(customer_id) FROM growth.customer_segments GROUP BY segment"
+      ]
+    }
+  ],
+  "edges": [
+    {"source": "customer_360", "target": "finance_revenue", "column_map": {"customer_id": ["customer_id"], "lifetime_value": ["lifetime_value"], "segment": ["segment"]}},
+    {"source": "customer_360", "target": "growth_segments", "column_map": {"customer_id": ["customer_id"], "segment": ["segment"]}},
+    {"source": "customer_360", "target": "support_priority", "column_map": {"customer_id": ["customer_id"], "lifetime_value": ["lifetime_value"], "last_order_at": ["last_order_at"]}},
+    {"source": "customer_360", "target": "churn_features", "column_map": {"customer_id": ["customer_id"], "lifetime_value": ["lifetime_value"], "last_order_at": ["recency"]}},
+    {"source": "churn_features", "target": "churn_model", "column_map": {}},
+    {"source": "growth_segments", "target": "campaign_dashboard", "column_map": {"customer_id": ["customer_id"], "segment": ["segment"]}}
+  ]
+}

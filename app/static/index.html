@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ConsumerGraph</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">DATAHUB · CONSUMER DEPENDENCY INTELLIGENCE</p>
+        <h1>See where your data<br><span>becomes critical.</span></h1>
+        <p class="lede">ConsumerGraph discovers how teams, dashboards, pipelines, and models converge on shared data—then turns those dependencies into contracts and safe migrations.</p>
+      </div>
+      <div class="status"><i></i> Deterministic demo ready</div>
+    </header>
+
+    <section class="controls panel">
+      <label>Shared data asset
+        <select id="asset-select"></select>
+      </label>
+      <button id="discover-button" class="primary">Discover convergence</button>
+    </section>
+
+    <section id="overview" class="grid hidden">
+      <article class="score-card panel">
+        <p class="eyebrow">CONVERGENCE SCORE</p>
+        <div class="score"><span id="score">0</span><small>/100</small></div>
+        <div id="risk" class="risk">—</div>
+        <p>Measures cross-team, cross-domain dependency—not simple query popularity.</p>
+      </article>
+      <article class="panel">
+        <p class="eyebrow">ORGANIZATIONAL REACH</p>
+        <div id="metrics" class="metrics"></div>
+      </article>
+    </section>
+
+    <section id="consumer-section" class="panel hidden">
+      <div class="section-head">
+        <div><p class="eyebrow">CONSUMER MAP</p><h2>Where consumers converge</h2></div>
+        <span id="consumer-count" class="pill"></span>
+      </div>
+      <div id="consumers" class="consumer-list"></div>
+    </section>
+
+    <section id="contract-section" class="panel hidden">
+      <div class="section-head">
+        <div><p class="eyebrow">CONSUMERSPEC</p><h2>Observed dependency contract</h2></div>
+        <span class="pill amber">Evidence, not policy</span>
+      </div>
+      <div id="contract" class="contract-table"></div>
+    </section>
+
+    <section id="change-section" class="panel hidden">
+      <div class="section-head">
+        <div><p class="eyebrow">CHANGESAFE</p><h2>Pressure-test a schema change</h2></div>
+      </div>
+      <form id="change-form" class="change-form">
+        <label>Change type
+          <select id="change-kind"><option value="rename">Rename column</option><option value="remove">Remove column</option><option value="type_change">Change type</option></select>
+        </label>
+        <label>Column<select id="column-select"></select></label>
+        <label id="new-value-label">New name<input id="new-value" value="buyer_id" required></label>
+        <button class="primary" type="submit">Analyze impact</button>
+      </form>
+      <div id="analysis" class="hidden"></div>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
+
