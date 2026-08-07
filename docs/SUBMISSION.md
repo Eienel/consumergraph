@@ -18,9 +18,10 @@
 - [x] Run MCP mode against DataHub OSS Quickstart on a 16 GB GitHub runner using
       `scripts/verify_live_datahub.py`.
 - [x] Capture the successful `live-datahub` proof artifact and workflow URL.
-- [ ] Load `showcase-ecommerce` and capture one real cross-tool column example.
-- [ ] Record an English demo video using `docs/DEMO.md`; keep it within the
-      event's time limit.
+- [x] Capture a real cross-tool column example from DataHub's official sample:
+      `logging_events.event_data` to `fct_users_created.user_name`.
+- [x] Generate a 1:51 English narrated demo at `demo/changesafe-demo.mp4`.
+- [ ] Optionally replace the narrated draft with a team-led live walkthrough.
 - [ ] Add the video URL and final screenshots to the Devpost project.
 - [ ] Select one primary category; use broader ConsumerGraph tools only as the
       roadmap.

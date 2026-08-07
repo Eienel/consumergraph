@@ -1,12 +1,12 @@
 {
-  "workflow_run": "https://github.com/Eienel/consumergraph/actions/runs/31135767899",
+  "workflow_run": "https://github.com/Eienel/consumergraph/actions/runs/31136996090",
   "datahub_oss_version": "1.7.0",
   "source": {
     "urn": "urn:li:dataset:(urn:li:dataPlatform:hive,logging_events,PROD)",
     "name": "logging_events"
   },
   "schema_fields_loaded": 4,
-  "lineage_consumers_loaded": 8,
+  "lineage_consumers_loaded": 10,
   "proposed_change": "rename event_data to payload",
   "verdict": "migration_required",
   "severity": "moderate",
@@ -21,8 +21,12 @@
   "generated_regression_sql": "SELECT COUNT(*) AS mismatches\nFROM logging_events_compatible\nWHERE event_data IS DISTINCT FROM payload;",
   "writeback": {
     "success": true,
-    "urn": "urn:li:document:shared-e981a1db-8ab4-47cb-b715-d491543657d4",
-    "message": "Successfully created document: ChangeSafe decision: logging_events.event_data"
+    "urn": "urn:li:document:shared-f986d134-971d-4f4e-a7c6-ee38f89a1d0d",
+    "message": "Successfully created document: ChangeSafe decision: logging_events.event_data",
+    "verified_readback": {
+      "success": true,
+      "attempts": 1
+    }
   },
   "unknown_coverage": "Consumers without captured lineage or query history may be missing."
 }

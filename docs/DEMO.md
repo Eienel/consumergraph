@@ -1,5 +1,15 @@
 # Two-minute judge demo
 
+A reproducible narrated draft can be generated on Windows with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/build_demo_video.ps1
+```
+
+The script uses the verified screenshots in `docs/screenshots/` and writes
+`demo/changesafe-demo.mp4`. Use the live walkthrough below for the strongest
+submission recording; the generated draft is a ready fallback.
+
 ## 0:00-0:15 - Pain
 
 "A producer's tests can be green while a column rename silently breaks Finance,

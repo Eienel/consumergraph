@@ -5,3 +5,4 @@ __pycache__/
 runtime/
 *.pyc
 *.egg-info/
+demo/*.wav

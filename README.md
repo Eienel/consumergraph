@@ -4,6 +4,8 @@
 
 ConsumerGraph is the future suite. ChangeSafe is the focused hackathon product.
 
+![ChangeSafe impact analysis and generated migration](docs/screenshots/02-impact-and-migration.jpg)
+
 The hackathon MVP combines two workflows:
 
 - **ConsumerSpec** infers a dependency contract from lineage, queries, usage, ownership, and cross-domain consumption.
@@ -73,13 +75,17 @@ and performs no mutation.
 
 ### Verified live OSS proof
 
-The [`live-datahub` workflow](https://github.com/Eienel/consumergraph/actions/runs/31135767899)
+The [`live-datahub` workflow](https://github.com/Eienel/consumergraph/actions/runs/31136996090)
 completed successfully against DataHub OSS 1.7.0 and the official MCP server. It
-loaded four schema fields and eight downstream consumers for `logging_events`,
+loaded four schema fields and ten downstream consumers for `logging_events`,
 traced `event_data` to `fct_users_created.user_name`, returned
 `migration_required`, generated the migration package, and created a real DataHub
-Document through `save_document`. The compact captured result is in
+Document through `save_document`. It then read that document back successfully
+on the first attempt. The compact captured result is in
 [`examples/live-datahub-proof.json`](examples/live-datahub-proof.json).
+
+The ready-to-upload 1:51 narrated demo is
+[`demo/changesafe-demo.mp4`](demo/changesafe-demo.mp4).
 
 ## DataHub write-back
 
@@ -158,6 +164,8 @@ break/repair proof behind the product claim.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the bounded build and
 [examples/change-package](examples/change-package) for a judge-readable output.
+
+Ready-to-paste project copy is in [docs/SUBMISSION_COPY.md](docs/SUBMISSION_COPY.md).
 
 ## License
 

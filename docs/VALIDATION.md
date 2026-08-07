@@ -60,7 +60,7 @@ on a 16 GB public GitHub-hosted runner, described below.
 
 ## Live DataHub OSS proof
 
-[Workflow run 31135767899](https://github.com/Eienel/consumergraph/actions/runs/31135767899)
+[Workflow run 31136996090](https://github.com/Eienel/consumergraph/actions/runs/31136996090)
 completed against DataHub OSS 1.7.0. It started the real Quickstart stack,
 ingested DataHub's official sample metadata, launched the official
 `mcp-server-datahub` package over Streamable HTTP, and executed ChangeSafe.
@@ -68,12 +68,13 @@ ingested DataHub's official sample metadata, launched the official
 Observed result:
 
 - 4 schema fields loaded for `logging_events`.
-- 8 downstream lineage consumers loaded.
+- 10 downstream lineage consumers loaded.
 - Column lineage connected `event_data` to `fct_users_created.user_name`.
 - ChangeSafe returned `migration_required` and generated compatibility and
   regression SQL.
 - MCP `save_document` returned success and created
-  `urn:li:document:shared-e981a1db-8ab4-47cb-b715-d491543657d4`.
+  `urn:li:document:shared-f986d134-971d-4f4e-a7c6-ee38f89a1d0d`.
+- MCP `get_entities` read that exact document URN back on the first attempt.
 - The proof artifact and MCP diagnostics were retained by the workflow; a compact
   copy is committed at `examples/live-datahub-proof.json`.
 
