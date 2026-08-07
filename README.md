@@ -71,6 +71,16 @@ python scripts/verify_live_datahub.py --column customer_id --new-name buyer_id
 The probe reads credentials only from the environment, never prints the token,
 and performs no mutation.
 
+### Verified live OSS proof
+
+The [`live-datahub` workflow](https://github.com/Eienel/consumergraph/actions/runs/31135767899)
+completed successfully against DataHub OSS 1.7.0 and the official MCP server. It
+loaded four schema fields and eight downstream consumers for `logging_events`,
+traced `event_data` to `fct_users_created.user_name`, returned
+`migration_required`, generated the migration package, and created a real DataHub
+Document through `save_document`. The compact captured result is in
+[`examples/live-datahub-proof.json`](examples/live-datahub-proof.json).
+
 ## DataHub write-back
 
 Install the DataHub SDK extra:
@@ -121,13 +131,13 @@ needs no warehouse, paid API, or Docker. It first proves that renaming
 `customer_id` to `buyer_id` breaks four downstream models, then runs ConsumerGraph,
 applies its generated compatibility view, and proves every model works again.
 
-The fixture is intentionally small enough to audit line by line. The next
-integration target is the official DataHub `showcase-ecommerce` datapack; that
-requires a running DataHub Quickstart with Docker Desktop allocated at least 8 GB.
+The fixture is intentionally small enough to audit line by line. The full local
+Quickstart is not run on this laptop because DataHub recommends allocating at
+least 8 GB to Docker; the live GitHub workflow runs it on a 16 GB hosted runner.
 
-This repository also contract-tests the full MCP initialize/session/tool-call
-sequence against a lightweight local server. That proves protocol behavior on
-this 8 GB laptop; it is not presented as proof of a live DataHub deployment.
+The repository separately contract-tests the full MCP initialize/session/tool-call
+sequence against a lightweight local server, while the live workflow proves
+interoperability with actual DataHub OSS and the official MCP implementation.
 
 ## Safety model
 

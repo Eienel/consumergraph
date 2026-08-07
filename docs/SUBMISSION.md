@@ -15,10 +15,9 @@
 
 ## External gates before Devpost submission
 
-- [ ] Run MCP mode against an authenticated DataHub tenant or Quickstart on a
-      machine with more than 8 GB RAM using `scripts/verify_live_datahub.py`.
-- [ ] Run the manual `live-datahub` GitHub workflow and attach its successful
-      proof artifact to the submission evidence.
+- [x] Run MCP mode against DataHub OSS Quickstart on a 16 GB GitHub runner using
+      `scripts/verify_live_datahub.py`.
+- [x] Capture the successful `live-datahub` proof artifact and workflow URL.
 - [ ] Load `showcase-ecommerce` and capture one real cross-tool column example.
 - [ ] Record an English demo video using `docs/DEMO.md`; keep it within the
       event's time limit.

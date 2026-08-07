@@ -57,7 +57,25 @@ def main() -> None:
     }
     if args.writeback:
         os.environ["CONSUMERGRAPH_MODE"] = "mcp"
-        summary["writeback"] = save_writeback(analysis, Path("runtime") / "live-validation")
+        writeback = save_writeback(analysis, Path("runtime") / "live-validation")
+        structured = writeback.get("datahub_result", {}).get("structuredContent", {})
+        document_urn = structured.get("urn") if isinstance(structured, dict) else None
+        if not document_urn:
+            raise RuntimeError("DataHub save_document did not return a document URN")
+        readback_result = client.call_tool("get_entities", {"urns": [document_urn]})
+        readback_payload = readback_result.get("structuredContent")
+        if readback_payload is None:
+            texts = [
+                item.get("text", "")
+                for item in readback_result.get("content", [])
+                if item.get("type") == "text"
+            ]
+            readback_payload = json.loads("\n".join(texts)) if texts else []
+        entities = readback_payload if isinstance(readback_payload, list) else [readback_payload]
+        if not any(isinstance(entity, dict) and entity.get("urn") == document_urn for entity in entities):
+            raise RuntimeError(f"DataHub document could not be read back after save: {document_urn}")
+        writeback["verified_readback"] = {"success": True, "urn": document_urn}
+        summary["writeback"] = writeback
     print(json.dumps(summary, indent=2))
 
 

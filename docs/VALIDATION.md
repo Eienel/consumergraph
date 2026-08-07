@@ -53,16 +53,33 @@ Run it with:
 python scripts/run_local_proof.py
 ```
 
-This proves the mechanism on an auditable fixture. It does not yet prove DataHub
-Quickstart interoperability. Docker Desktop is not currently running on the test
-machine, and the machine has roughly 8 GB total RAM while DataHub recommends at
-least 8 GB allocated to Docker. The safe next integration is to run the same
-test against DataHub's official `showcase-ecommerce` datapack on a machine with
-enough memory.
+This proves the mechanism on an auditable fixture. Docker Desktop is not run on
+the test laptop because it has roughly 8 GB total RAM while DataHub recommends at
+least 8 GB allocated to Docker. Quickstart interoperability is instead verified
+on a 16 GB public GitHub-hosted runner, described below.
+
+## Live DataHub OSS proof
+
+[Workflow run 31135767899](https://github.com/Eienel/consumergraph/actions/runs/31135767899)
+completed against DataHub OSS 1.7.0. It started the real Quickstart stack,
+ingested DataHub's official sample metadata, launched the official
+`mcp-server-datahub` package over Streamable HTTP, and executed ChangeSafe.
+
+Observed result:
+
+- 4 schema fields loaded for `logging_events`.
+- 8 downstream lineage consumers loaded.
+- Column lineage connected `event_data` to `fct_users_created.user_name`.
+- ChangeSafe returned `migration_required` and generated compatibility and
+  regression SQL.
+- MCP `save_document` returned success and created
+  `urn:li:document:shared-e981a1db-8ab4-47cb-b715-d491543657d4`.
+- The proof artifact and MCP diagnostics were retained by the workflow; a compact
+  copy is committed at `examples/live-datahub-proof.json`.
 
 ## MCP and Git contract proof
 
-`tests/test_mcp_contract.py` runs a real local HTTP server and verifies the MCP
+`tests/test_mcp_contract.py` runs a local HTTP server and verifies the MCP
 initialize notification, session header, and DataHub tool calls for entities,
 schema, downstream lineage, and query history. The hydrated graph then finds all
 four affected consumers. This is a protocol contract test, not a live DataHub

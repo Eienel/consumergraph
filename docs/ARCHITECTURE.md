@@ -41,5 +41,6 @@ would be unreliable. Verification is split honestly:
 1. Real SQLite execution proves the break and repair mechanism.
 2. A real HTTP server contract test proves MCP lifecycle, session, and tool calls.
 3. A temporary real Git repository proves branch and commit creation.
-4. Live DataHub verification remains a deployment gate requiring an authenticated
-   hosted tenant or a larger machine for Quickstart plus the showcase datapack.
+4. A manual GitHub workflow uses a 16 GB hosted runner to start real DataHub OSS,
+   ingest official sample metadata, run the official MCP server, and verify both
+   column-impact reads and durable document write-back.
