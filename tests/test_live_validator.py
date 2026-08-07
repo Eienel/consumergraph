@@ -26,6 +26,11 @@ def test_tool_payload_and_entity_detection_support_official_mcp_wrapper():
     assert contains_entity(payload, URN)
 
 
+def test_entity_detection_supports_datahub_oss_result_wrapper():
+    payload = {"result": [{"urn": URN}]}
+    assert contains_entity(payload, URN)
+
+
 def test_tool_payload_falls_back_to_text_content():
     result = {"content": [{"type": "text", "text": f'[{chr(123)}"urn": "{URN}"{chr(125)}]'}]}
     assert contains_entity(tool_payload(result), URN)

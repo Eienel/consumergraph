@@ -44,7 +44,7 @@ def contains_entity(payload: Any, urn: str) -> bool:
         return True
     return any(
         contains_entity(payload.get(key), urn)
-        for key in ("entities", "results", "searchResults", "data")
+        for key in ("entities", "result", "results", "searchResults", "data")
         if key in payload
     )
 
