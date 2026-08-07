@@ -6,6 +6,8 @@ import re
 from datetime import UTC, datetime
 from pathlib import Path
 
+from .mcp_client import McpClient
+
 
 def _slug(value: str) -> str:
     return re.sub(r"[^a-z0-9-]+", "-", value.lower()).strip("-")
@@ -26,7 +28,7 @@ def render_markdown(analysis: dict) -> str:
         "",
     ]
     for item in affected:
-        lines.append(f"- {item['name']} ({item['type']}) — owner: {item['owner']}, domain: {item['domain']}")
+        lines.append(f"- {item['name']} ({item['type']}) - owner: {item['owner']}, domain: {item['domain']}")
     lines.extend(
         [
             "",
@@ -59,6 +61,20 @@ def save_writeback(analysis: dict, runtime_dir: Path) -> dict:
 
     mode = os.getenv("CONSUMERGRAPH_MODE", "demo").lower()
     if mode != "datahub":
+        if mode == "mcp":
+            url = os.environ.get("DATAHUB_MCP_URL")
+            if not url:
+                raise RuntimeError("DATAHUB_MCP_URL is required when CONSUMERGRAPH_MODE=mcp")
+            result = McpClient(url, token=os.environ.get("DATAHUB_MCP_TOKEN")).call_tool(
+                "save_document",
+                {
+                    "document_type": "Decision",
+                    "title": f"ChangeSafe decision: {analysis['source']['name']}.{analysis['change']['column']}",
+                    "content": markdown,
+                    "related_assets": [analysis["source"]["urn"]] if analysis["source"].get("urn") else [],
+                },
+            )
+            return {"mode": "mcp", "document_id": doc_id, "datahub_result": result, "markdown": markdown}
         return {"mode": "demo", "document_id": doc_id, "local_path": str(path), "markdown": markdown}
 
     try:
@@ -82,4 +98,3 @@ def save_writeback(analysis: dict, runtime_dir: Path) -> dict:
     )
     client.entities.upsert(doc)
     return {"mode": "datahub", "document_id": doc_id, "urn": str(doc.urn), "markdown": markdown}
-

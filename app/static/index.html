@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ConsumerGraph</title>
+  <title>ChangeSafe by ConsumerGraph</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
   <main>
     <header class="hero">
       <div>
-        <p class="eyebrow">DATAHUB · CONSUMER DEPENDENCY INTELLIGENCE</p>
-        <h1>See where your data<br><span>becomes critical.</span></h1>
-        <p class="lede">ConsumerGraph discovers how teams, dashboards, pipelines, and models converge on shared data—then turns those dependencies into contracts and safe migrations.</p>
+        <p class="eyebrow">DATAHUB · CHANGE-SAFE MIGRATIONS</p>
+        <h1>Ship schema changes<br><span>without breaking consumers.</span></h1>
+        <p class="lede">ChangeSafe reads DataHub's organizational graph, finds every known consumer at risk, and turns impact evidence into tested migration code and a reviewable Git change.</p>
       </div>
-      <div class="status"><i></i> Deterministic demo ready</div>
+      <div id="runtime-status" class="status"><i></i> Loading catalog</div>
     </header>
 
     <section class="controls panel">
@@ -71,4 +71,3 @@
   <script src="/static/app.js"></script>
 </body>
 </html>
-

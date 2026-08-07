@@ -41,7 +41,7 @@ class CatalogRepository:
                 if edge.target in seen:
                     continue
                 seen.add(edge.target)
-                next_hops = hops + 1
+                next_hops = hops + edge.hops
                 asset = self.get_asset(edge.target)
                 results.append((asset, next_hops))
                 queue.append((edge.target, next_hops))

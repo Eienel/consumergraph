@@ -35,7 +35,7 @@ class ConsumerGraphEngine:
     def convergence(self, asset_id: str) -> dict:
         source = self.catalog.get_asset(asset_id)
         downstream = self.catalog.downstream(asset_id)
-        direct_ids = {edge.target for edge in self.catalog.outgoing(asset_id)}
+        direct_ids = {edge.target for edge in self.catalog.outgoing(asset_id) if edge.hops == 1}
         teams = {asset.owner for asset, _ in downstream}
         domains = {asset.domain for asset, _ in downstream}
         dashboards = sum(asset.type == "dashboard" for asset, _ in downstream)
@@ -78,6 +78,15 @@ class ConsumerGraphEngine:
             column.name: {"queries": 0, "consumers": set(), "roles": set(), "samples": []}
             for column in source.columns
         }
+        for query in source.queries:
+            for column in source.columns:
+                if not _contains_column(query, column.name):
+                    continue
+                item = evidence[column.name]
+                item["queries"] += 1
+                item["roles"].update(_roles(query, column.name))
+                if len(item["samples"]) < 2:
+                    item["samples"].append(query)
         for consumer, _ in downstream:
             for query in consumer.queries:
                 for column in source.columns:

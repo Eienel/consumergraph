@@ -60,6 +60,20 @@ least 8 GB allocated to Docker. The safe next integration is to run the same
 test against DataHub's official `showcase-ecommerce` datapack on a machine with
 enough memory.
 
+## MCP and Git contract proof
+
+`tests/test_mcp_contract.py` runs a real local HTTP server and verifies the MCP
+initialize notification, session header, and DataHub tool calls for entities,
+schema, downstream lineage, and query history. The hydrated graph then finds all
+four affected consumers. This is a protocol contract test, not a live DataHub
+claim.
+
+`tests/test_artifacts.py` generates the four-file review package, applies it to
+a temporary clean Git repository, and verifies that ChangeSafe creates a named
+branch and a real commit. The public hosted DataHub demo was also probed read-only
+on August 7, 2026: the UI was public, while `/api/gms/config` and
+`/api/gms/mcp` returned `401 Unauthorized`. No mutation was attempted.
+
 ## Cheapest remaining kill probes
 
 1. Show five data engineers the generated impact plan and ask what they would

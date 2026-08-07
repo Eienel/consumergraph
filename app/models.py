@@ -20,14 +20,15 @@ class Asset(BaseModel):
     owner: str
     domain: str
     criticality: int = Field(default=1, ge=1, le=5)
-    columns: list[Column] = []
-    queries: list[str] = []
+    columns: list[Column] = Field(default_factory=list)
+    queries: list[str] = Field(default_factory=list)
 
 
 class Edge(BaseModel):
     source: str
     target: str
-    column_map: dict[str, list[str]] = {}
+    hops: int = Field(default=1, ge=1)
+    column_map: dict[str, list[str]] = Field(default_factory=dict)
 
 
 class Catalog(BaseModel):

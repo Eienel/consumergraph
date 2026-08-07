@@ -1,6 +1,8 @@
 # ConsumerGraph
 
-**ConsumerGraph is a DataHub-powered system that discovers how teams, dashboards, pipelines, and models converge on shared data, then turns those dependencies into enforceable contracts and safe migration code.**
+**ChangeSafe uses DataHub's organizational metadata graph to find every known consumer of a proposed schema change, generate a tested compatibility migration, package it for Git review, and record the decision back in DataHub.**
+
+ConsumerGraph is the future suite. ChangeSafe is the focused hackathon product.
 
 The hackathon MVP combines two workflows:
 
@@ -19,7 +21,8 @@ Repository tests know whether producer code works. They usually do not know that
 4. Propose a rename, removal, or type change.
 5. See known affected consumers and explicit unknown coverage.
 6. Generate compatibility SQL and regression tests.
-7. Approve the decision and persist it locally or as a DataHub Document.
+7. Generate a four-file review package and apply it as a real Git branch and commit.
+8. Approve the decision and persist it locally or as a DataHub Document.
 
 The analysis engine is deterministic. A local LLM may later explain results, but it is not allowed to decide whether a change is safe.
 
@@ -38,7 +41,26 @@ uvicorn app.main:app --reload
 
 Open <http://localhost:8000>.
 
-The default `CONSUMERGRAPH_MODE=demo` requires no DataHub instance or paid API.
+The default `CONSUMERGRAPH_CATALOG_MODE=demo` requires no DataHub instance or paid API.
+
+## DataHub MCP mode
+
+ChangeSafe uses the official read tools `get_entities`, `list_schema_fields`,
+`get_lineage`, and `get_dataset_queries`. It uses `save_document` for durable
+write-back when mutations are enabled.
+
+```bash
+CONSUMERGRAPH_CATALOG_MODE=mcp
+CONSUMERGRAPH_MODE=mcp
+DATAHUB_MCP_URL=https://your-tenant.acryl.io/integrations/ai/mcp/
+DATAHUB_MCP_TOKEN=<service-account-token>
+DATAHUB_SOURCE_URN=urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.customer_360,PROD)
+```
+
+MCP mode fails closed when configuration or the server is unavailable; it never
+silently substitutes the demo graph. The official public demo currently returns
+`401 Unauthorized` for GMS and MCP routes, so it cannot be used as an anonymous
+integration target.
 
 ## DataHub write-back
 
@@ -64,6 +86,20 @@ For a rich local catalog, load the official showcase datapack:
 datahub datapack load showcase-ecommerce
 ```
 
+## Git review workflow
+
+The UI's **Generate review package** action creates compatibility SQL, regression
+SQL, `MIGRATION.md`, and `impact.json`. After review, apply it to a clean target
+repository:
+
+```bash
+python scripts/apply_change_package.py <package-directory> <target-repository>
+```
+
+ChangeSafe creates a `changesafe/...` branch and a real commit, refuses dirty
+repositories, and refuses to overwrite existing files. Pushing and opening a PR
+remain explicit human actions.
+
 ## Tests
 
 ```bash
@@ -79,6 +115,10 @@ applies its generated compatibility view, and proves every model works again.
 The fixture is intentionally small enough to audit line by line. The next
 integration target is the official DataHub `showcase-ecommerce` datapack; that
 requires a running DataHub Quickstart with Docker Desktop allocated at least 8 GB.
+
+This repository also contract-tests the full MCP initialize/session/tool-call
+sequence against a lightweight local server. That proves protocol behavior on
+this 8 GB laptop; it is not presented as proof of a live DataHub deployment.
 
 ## Safety model
 
@@ -96,6 +136,9 @@ convergence.
 
 See [docs/VALIDATION.md](docs/VALIDATION.md) for the evidence, limits, and local
 break/repair proof behind the product claim.
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the bounded build and
+[examples/change-package](examples/change-package) for a judge-readable output.
 
 ## License
 
