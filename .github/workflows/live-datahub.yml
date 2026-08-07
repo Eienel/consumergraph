@@ -60,6 +60,7 @@ jobs:
 
       - name: Run live read, column-lineage, action, and write-back proof
         run: |
+          set -o pipefail
           python scripts/verify_live_datahub.py \
             --column event_data \
             --new-name payload \
