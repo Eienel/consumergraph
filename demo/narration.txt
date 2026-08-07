@@ -1,0 +1,9 @@
+A producer's tests can be green while one schema change breaks Finance, Growth, Support, and machine learning consumers. The missing evidence is outside the producer repository. DataHub already knows the organizational dependency graph. ChangeSafe turns that context into a safe, reviewable migration.
+
+Here, a shared customer dataset has a convergence score of one hundred because six consumers across six teams and four domains depend on it. ConsumerSpec converts observed lineage, query usage, and column paths into an evidence-backed dependency contract. It is evidence, not policy, and missing metadata remains clearly marked as unknown coverage.
+
+Now we propose renaming customer I D to buyer I D. ChangeSafe finds five known affected consumers and blocks the change as critical risk. It generates a compatibility view that preserves the old column name and a regression query that must return zero mismatches. A separate SQLite proof starts with four genuinely broken downstream models, applies this generated compatibility mechanism, and repairs all four.
+
+The final action produces a four-file review package: compatibility SQL, regression SQL, a migration note for owners, and machine-readable impact evidence. It can be applied as a real Git branch and commit, but never merges itself. After human approval, ChangeSafe records the decision back in DataHub.
+
+Our public live workflow boots DataHub Open Source and the official MCP server, reads real schema and column-level lineage, creates the decision document, and reads its U R N back. DataHub tells you what will break. ChangeSafe gives your team the tested change to stop it from breaking.

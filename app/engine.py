@@ -35,7 +35,7 @@ class ConsumerGraphEngine:
     def convergence(self, asset_id: str) -> dict:
         source = self.catalog.get_asset(asset_id)
         downstream = self.catalog.downstream(asset_id)
-        direct_ids = {edge.target for edge in self.catalog.outgoing(asset_id)}
+        direct_ids = {edge.target for edge in self.catalog.outgoing(asset_id) if edge.hops == 1}
         teams = {asset.owner for asset, _ in downstream}
         domains = {asset.domain for asset, _ in downstream}
         dashboards = sum(asset.type == "dashboard" for asset, _ in downstream)
@@ -78,6 +78,15 @@ class ConsumerGraphEngine:
             column.name: {"queries": 0, "consumers": set(), "roles": set(), "samples": []}
             for column in source.columns
         }
+        for query in source.queries:
+            for column in source.columns:
+                if not _contains_column(query, column.name):
+                    continue
+                item = evidence[column.name]
+                item["queries"] += 1
+                item["roles"].update(_roles(query, column.name))
+                if len(item["samples"]) < 2:
+                    item["samples"].append(query)
         for consumer, _ in downstream:
             for query in consumer.queries:
                 for column in source.columns:
@@ -168,10 +177,12 @@ class ConsumerGraphEngine:
         other_columns = [item.name for item in source.columns if item.name != column]
         if request.kind == "rename":
             projection = [request.new_name, f"{request.new_name} AS {column}", *other_columns]
-            sql = "CREATE OR REPLACE VIEW {0}_compatible AS\nSELECT\n    {1}\nFROM {0};".format(
-                source.name, ",\n    ".join(projection)
+            input_relation = request.replacement_relation or source.name
+            output_relation = source.name if request.replacement_relation else f"{source.name}_compatible"
+            sql = "CREATE OR REPLACE VIEW {0} AS\nSELECT\n    {1}\nFROM {2};".format(
+                output_relation, ",\n    ".join(projection), input_relation
             )
-            tests = f"SELECT COUNT(*) AS mismatches\nFROM {source.name}_compatible\nWHERE {column} IS DISTINCT FROM {request.new_name};"
+            tests = f"SELECT COUNT(*) AS mismatches\nFROM {output_relation}\nWHERE {column} IS DISTINCT FROM {request.new_name};"
         elif request.kind == "remove":
             sql = f"-- BLOCKED: preserve {column} until all known consumers migrate.\n-- Proposed source: {source.name}"
             tests = f"SELECT COUNT(*) AS remaining_dependencies\nFROM consumergraph_dependencies\nWHERE asset = '{source.name}' AND column_name = '{column}';"
@@ -180,4 +191,3 @@ class ConsumerGraphEngine:
             sql = "CREATE OR REPLACE VIEW {0}_compatible AS\nSELECT\n    {1}\nFROM {0};".format(source.name, ",\n    ".join(projection))
             tests = f"SELECT COUNT(*) AS invalid_casts\nFROM {source.name}\nWHERE {column} IS NOT NULL AND TRY_CAST({column} AS {request.new_type}) IS NULL;"
         return sql, tests
-

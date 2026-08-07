@@ -12,6 +12,14 @@ class CatalogRepository:
         self.catalog = Catalog.model_validate_json(path.read_text(encoding="utf-8"))
         self.assets = {asset.id: asset for asset in self.catalog.assets}
 
+    @classmethod
+    def from_catalog(cls, catalog: Catalog) -> "CatalogRepository":
+        repository = cls.__new__(cls)
+        repository.path = None
+        repository.catalog = catalog
+        repository.assets = {asset.id: asset for asset in catalog.assets}
+        return repository
+
     def get_asset(self, asset_id: str) -> Asset:
         try:
             return self.assets[asset_id]
@@ -33,7 +41,7 @@ class CatalogRepository:
                 if edge.target in seen:
                     continue
                 seen.add(edge.target)
-                next_hops = hops + 1
+                next_hops = hops + edge.hops
                 asset = self.get_asset(edge.target)
                 results.append((asset, next_hops))
                 queue.append((edge.target, next_hops))
@@ -41,4 +49,3 @@ class CatalogRepository:
 
     def serialize(self) -> dict:
         return json.loads(self.catalog.model_dump_json())
-

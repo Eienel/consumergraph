@@ -49,12 +49,13 @@ section.panel { margin-top: 16px; }
 .confidence { text-transform: uppercase; font-size: 10px; letter-spacing: .1em; color: var(--amber); }
 .change-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; align-items: end; gap: 12px; }
 .analysis-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; margin-top: 22px; }
-.result { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: #091511; }
+.result { min-width: 0; border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: #091511; }
+.result p { overflow-wrap: anywhere; }
 .result h3 { margin-top: 0; }
 .result ul { color: var(--muted); line-height: 1.65; padding-left: 20px; }
 pre { overflow: auto; background: #040b09; border: 1px solid var(--line); border-radius: 10px; padding: 15px; color: #b8ecd7; white-space: pre-wrap; }
 .writeback { margin-top: 12px; }
+.result-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .notice { color: var(--amber); }
 .hidden { display: none !important; }
 @media (max-width: 760px) { .hero, .controls { flex-direction: column; } .grid, .analysis-grid { grid-template-columns: 1fr; } .consumer-list { grid-template-columns: 1fr; } .change-form { grid-template-columns: 1fr; } .contract-row { grid-template-columns: 1fr 1fr; } .status { display: none; } }
-
