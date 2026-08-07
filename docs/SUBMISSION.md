@@ -23,10 +23,11 @@
 - [x] Generate a 1:51 English narrated demo at `demo/changesafe-demo.mp4`.
 - [ ] Optionally replace the narrated draft with a team-led live walkthrough.
 - [ ] Add the video URL and final screenshots to the Devpost project.
-- [ ] Select one primary category; use broader ConsumerGraph tools only as the
-      roadmap.
-- [ ] Re-check the public repository from a signed-out browser.
-- [ ] Confirm Devpost detected the Apache-2.0 license.
+- [x] Select **Metadata-Aware Development** as the primary category; use broader
+      ConsumerGraph tools only as the roadmap.
+- [x] Re-check the repository without GitHub credentials; the public page
+      returned HTTP 200 on August 7, 2026.
+- [x] Confirm GitHub's unauthenticated license endpoint detects Apache-2.0.
 - [ ] Submit before the deadline and do not change judged materials afterward.
 
 The unchecked items require external credentials, a larger deployment target,

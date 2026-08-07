@@ -36,4 +36,14 @@ def test_rename_generates_compatibility_alias_and_finds_consumers():
 def test_remove_is_blocked_when_consumers_exist():
     result = engine().analyze_change(ChangeRequest(asset_id="customer_360", kind="remove", column="customer_id"))
     assert result["approval_recommendation"] == "block_until_manual_plan"
+    assert "migration plan required" in result["generated"]["regression_tests"]
 
+
+def test_type_change_generates_cast_and_is_blocked_for_known_consumers():
+    result = engine().analyze_change(
+        ChangeRequest(asset_id="customer_360", kind="type_change", column="customer_id", new_type="BIGINT")
+    )
+    assert result["verdict"] == "migration_required"
+    assert result["approval_recommendation"] == "block_until_manual_plan"
+    assert "CAST(customer_id AS BIGINT) AS customer_id" in result["generated"]["compatibility_sql"]
+    assert "TRY_CAST(customer_id AS BIGINT)" in result["generated"]["regression_tests"]

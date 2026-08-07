@@ -185,7 +185,10 @@ class ConsumerGraphEngine:
             tests = f"SELECT COUNT(*) AS mismatches\nFROM {output_relation}\nWHERE {column} IS DISTINCT FROM {request.new_name};"
         elif request.kind == "remove":
             sql = f"-- BLOCKED: preserve {column} until all known consumers migrate.\n-- Proposed source: {source.name}"
-            tests = f"SELECT COUNT(*) AS remaining_dependencies\nFROM consumergraph_dependencies\nWHERE asset = '{source.name}' AND column_name = '{column}';"
+            tests = (
+                "-- This executable data test intentionally returns one row while the removal is blocked.\n"
+                f"SELECT '{source.name}.{column} has known consumers; migration plan required' AS blocking_reason;"
+            )
         else:
             projection = [f"CAST({column} AS {column_type}) AS {column}" if item == column else item for item in [column, *other_columns] for column_type in [request.new_type]]
             sql = "CREATE OR REPLACE VIEW {0}_compatible AS\nSELECT\n    {1}\nFROM {0};".format(source.name, ",\n    ".join(projection))
