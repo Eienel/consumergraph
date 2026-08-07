@@ -2,6 +2,12 @@ name: live-datahub
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - agent/real-change-proof
+    paths:
+      - .github/workflows/live-datahub.yml
+      - scripts/verify_live_datahub.py
 
 permissions:
   contents: read
