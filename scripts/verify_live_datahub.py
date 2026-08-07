@@ -3,11 +3,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from pathlib import Path
 
 from app.datahub_mcp import DataHubMcpCatalog
 from app.engine import ConsumerGraphEngine
 from app.mcp_client import McpClient
 from app.models import ChangeRequest
+from app.writeback import save_writeback
 
 
 def required_env(name: str) -> str:
@@ -22,6 +24,11 @@ def main() -> None:
     parser.add_argument("--column", required=True, help="Existing source column to pressure-test")
     parser.add_argument("--new-name", required=True, help="Proposed replacement column name")
     parser.add_argument("--max-hops", type=int, default=3, choices=(1, 2, 3))
+    parser.add_argument(
+        "--writeback",
+        action="store_true",
+        help="After the read proof, persist the reviewed decision through DataHub MCP save_document.",
+    )
     args = parser.parse_args()
 
     url = required_env("DATAHUB_MCP_URL")
@@ -48,6 +55,9 @@ def main() -> None:
         "affected_consumers": analysis["known_affected_consumers"],
         "unknown_coverage": analysis["unknown_coverage"],
     }
+    if args.writeback:
+        os.environ["CONSUMERGRAPH_MODE"] = "mcp"
+        summary["writeback"] = save_writeback(analysis, Path("runtime") / "live-validation")
     print(json.dumps(summary, indent=2))
 
 

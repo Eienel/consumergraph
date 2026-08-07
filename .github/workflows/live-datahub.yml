@@ -1,0 +1,75 @@
+name: live-datahub
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quickstart-mcp-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DATAHUB_TELEMETRY_ENABLED: "false"
+      DATAHUB_GMS_URL: http://127.0.0.1:8080
+      DATAHUB_MCP_URL: http://127.0.0.1:8000/mcp
+      DATAHUB_SOURCE_URN: urn:li:dataset:(urn:li:dataPlatform:hive,logging_events,PROD)
+      TOOLS_IS_MUTATION_ENABLED: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Show runner capacity
+        run: |
+          free -h
+          df -h /
+          docker version
+
+      - name: Install ChangeSafe, DataHub CLI, and official MCP server
+        run: python -m pip install -e ".[dev,datahub]" mcp-server-datahub
+
+      - name: Start DataHub OSS Quickstart
+        run: datahub docker quickstart
+
+      - name: Ingest DataHub's official sample metadata
+        run: datahub docker ingest-sample-data
+
+      - name: Start the official DataHub MCP server over HTTP
+        run: |
+          nohup mcp-server-datahub --transport http > mcp-server.log 2>&1 &
+          echo $! > mcp-server.pid
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8000/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat mcp-server.log
+          exit 1
+
+      - name: Run live read, column-lineage, action, and write-back proof
+        run: |
+          python scripts/verify_live_datahub.py \
+            --column event_data \
+            --new-name payload \
+            --writeback | tee live-proof.json
+
+      - name: Preserve proof and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-datahub-proof
+          path: |
+            live-proof.json
+            mcp-server.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Stop Quickstart
+        if: always()
+        run: datahub docker quickstart --stop || true
