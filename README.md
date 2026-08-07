@@ -62,6 +62,15 @@ silently substitutes the demo graph. The official public demo currently returns
 `401 Unauthorized` for GMS and MCP routes, so it cannot be used as an anonymous
 integration target.
 
+Run the read-only live acceptance probe before using a tenant in the UI:
+
+```bash
+python scripts/verify_live_datahub.py --column customer_id --new-name buyer_id
+```
+
+The probe reads credentials only from the environment, never prints the token,
+and performs no mutation.
+
 ## DataHub write-back
 
 Install the DataHub SDK extra:
